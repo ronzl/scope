@@ -19,6 +19,9 @@ import javax.annotation.Nonnull;
  */
 public final class ScopeKey<T> {
 
+    /**
+     * Scope 可以认为是一个保存在 ThreadLocal 中的 ConcurrentHashMap，而 ScopeKey 就是 Map 的 key
+     */
     private final T defaultValue;
     private final Supplier<T> initializer;
     private final boolean enableNullProtection;

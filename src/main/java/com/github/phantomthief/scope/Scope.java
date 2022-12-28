@@ -61,6 +61,11 @@ public final class Scope {
 
     private static final SubstituteThreadLocal<Scope> SCOPE_THREAD_LOCAL = MyThreadLocalFactory.create();
 
+    /**
+     * 将数据存储到 ThreadLocal 中实际上要将其存储到 ThreadLocal 的内部类 ThreadLocalMap 中，其中 key 为当前 thread，value 为要存储数据。
+     * Scope 将被存储到 ThreadLocal 中，实际上 Scope 就是一个 ConcurrentMap，所以在 Scope 中可以存储一系列 k-v。
+     * 简单来说，我们可以通过将一系列 k-v 存储到 Scope 中从而达成存储到 ThreadLocal 中的目的。
+     */
     private final ConcurrentMap<ScopeKey<?>, Object> values = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<ScopeKey<?>, Boolean> enableNullProtections = new ConcurrentHashMap<>();
@@ -190,6 +195,14 @@ public final class Scope {
         }
     }
 
+    /**
+     * 从 Scope 中获取指定的 ScopeKey 对应的 value。
+     *  - 如果 Scope 中没有 ScopeKey 对应的值，则根据 ScopeKey 中指定的初始化器创建值并将 k-v 存储到 Scope 中；
+     *  - 如果 Scope 中没有 ScopeKey 对应的值且 ScopeKey 没有指定的初始化器，则返回 ScopeKey 的默认值
+     * @param key
+     * @return
+     * @param <T>
+     */
     @SuppressWarnings("unchecked")
     public <T> T get(@Nonnull ScopeKey<T> key) {
         T value = (T) values.get(key);
